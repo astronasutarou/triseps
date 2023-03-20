@@ -5,8 +5,11 @@ from setuptools import setup, find_packages
 import os, sys, re
 
 
+from tricceps import __version__
+
+
 with open('README.md', 'r') as fd:
-  version = '0.013'
+  version = __version__
   author = 'Ryou Ohsawa'
   email = 'ryou.ohsawa@nao.ac.jp'
   description = ''
