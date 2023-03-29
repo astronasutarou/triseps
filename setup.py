@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 import os, sys, re
 
 
-from tricceps import __version__
+from triseps import __version__
 
 
 with open('README.md', 'r') as fd:
@@ -35,7 +35,7 @@ classifiers = [
 
 if __name__ == '__main__':
   setup(
-    name='tricceps',
+    name='triseps',
     version=version,
     author=author,
     author_email=email,
@@ -49,4 +49,3 @@ if __name__ == '__main__':
     packages=find_packages(),
     classifiers=classifiers,
     install_requires=requirements)
-
