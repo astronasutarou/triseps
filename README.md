@@ -6,7 +6,7 @@ This repository provides a suite of programs for photometric measurements of dat
 ## Install
 
 ``` console
-python -m pip install git+https://bitbucket.org/ryou_ohsawa/triseps/src/master/
+$ python -m pip install git+https://bitbucket.org/ryou_ohsawa/triseps/src/master/
 ```
 
 ## Contents
