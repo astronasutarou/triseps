@@ -59,10 +59,7 @@ plugins:
 nav:
   - Top Page: index.md
   - Tutorial:
-    - 'not implemented': index.md
-    - 'not implemented': index.md
-    - 'not implemented': index.md
-    - 'not implemented': index.md
+    - 'not implemented': none
   - Instrument:
     - inst/overview.md
     - inst/cmos.md
