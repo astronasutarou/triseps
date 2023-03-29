@@ -21,3 +21,6 @@ upload_pypi: build_pypi
 
 clean:
 	rm -r $(OBJECT)
+
+serve:
+	mkdocs serve

@@ -1,0 +1,55 @@
+site_name: triseps
+site_url: ""
+site_author: Ryou Ohsawa
+site_description:
+  Source extractoin programs for TriCCS
+
+repo_name: ryou_ohsawa/triseps
+repo_url: https://bitbucket.org/ryou_ohsawa/triseps/src/master/
+edit_uri: ""
+
+copyright: Copyright &copy; 2023&ndash; Ryou Ohsawa
+
+theme:
+  name: 'material'
+  icon:
+    logo: logo
+  language: 'en'
+  palette:
+    scheme: default
+    primary: blue grey
+    accent: deep orange
+  features:
+    - navigation.sections
+    - header.autohide
+
+extra_css:
+  - css/local.css
+extra_javascript:
+  - js/config_mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+markdown_extensions:
+  - toc:
+      toc_depth: 3
+  - extra
+  - admonition
+  - smarty
+  - sane_lists
+  - meta
+  - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      check_paths: True
+  - pymdownx.arithmatex:
+      generic: true
+
+nav:
+  - Top Page: index.md
+  - Links:
+    - bitbucket: https://bitbucket.org/ryou_ohsawa/triseps/src/master/
+    - PyPi: https://pypi.org/project/triseps/
