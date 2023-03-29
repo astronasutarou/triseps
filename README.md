@@ -2,6 +2,15 @@
 
 This repository provides a suite of programs for photometric measurements of data obtained with [TriCCS][triccs]. TriCCS is a tri-color simultaneous camera and spectrograph attached to [Seimei Telescope][seimei]. Three CMOS sensors are equipped with TriCCS. The cameras share the same field-of-view. Thanks to the CMOS sensors, TriCCS is able to continuously obtain multi-color images without dead time.
 
+
+## Install
+
+``` console
+python -m pip install git+https://bitbucket.org/ryou_ohsawa/triseps/src/master/
+```
+
+## Contents
+
 The following functions will be provided in this repository:
 
 - basic calibration
