@@ -4,9 +4,9 @@ This repository provides a suite of programs for photometric measurements of dat
 
 The following functions will be provided in this repository:
 
-[ ] basic calibration
-    [ ] dark subtraction
-    [ ] flat fielding
+- basic calibration
+    - dark subtraction
+    - flat fielding
 - basic wcs calibration
 - photometry of video data (three-dimensional FITS files)
     - aperture photometry
