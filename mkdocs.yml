@@ -19,11 +19,11 @@ theme:
     text: Rubik
     code: Source Code Pro
   palette:
-    scheme: slate
-    primary: brown
-    accent: deep orange
+    scheme: default
+    primary: white
+    accent: orange
   features:
-    - navigation.indexes
+    - navigation.sections
     - header.autohide
 
 extra_css:
@@ -55,10 +55,18 @@ markdown_extensions:
 
 plugins:
   - search
-  - img2fig
 
 nav:
   - Top Page: index.md
+  - Tutorial:
+    - 'not implemented': index.md
+    - 'not implemented': index.md
+    - 'not implemented': index.md
+    - 'not implemented': index.md
+  - Instrument:
+    - inst/overview.md
+    - inst/cmos.md
+    - inst/header.md
   - Links:
     - bitbucket: https://bitbucket.org/ryou_ohsawa/triseps/src/master/
     - PyPi: https://pypi.org/project/triseps/
