@@ -1,4 +1,5 @@
 # triseps - SEPs for TriCCS
+[![Documentation Status](https://readthedocs.org/projects/triseps/badge/?version=latest)](https://triseps.readthedocs.io/en/latest/?badge=latest)
 
 This repository provides a suite of programs for photometric measurements of data obtained with [TriCCS][triccs]. TriCCS is a tri-color simultaneous camera and spectrograph attached to [Seimei Telescope][seimei]. Three CMOS sensors are equipped with TriCCS. The cameras share the same field-of-view. Thanks to the CMOS sensors, TriCCS is able to continuously obtain multi-color images without dead time.
 
