@@ -25,7 +25,7 @@ The following functions will be provided in this repository:
 - basic calibration
     - dark subtraction
     - flat fielding
-- basic field analysis (WCS calibration)
+- basic astrometric calibration
 - photometry of video data (three-dimensional FITS files)
     - aperture photometry
     - PSF photometry

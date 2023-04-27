@@ -12,8 +12,8 @@ copyright: Copyright &copy; 2023&ndash; Ryou Ohsawa
 
 theme:
   name: 'material'
-  icon:
-    logo: logo
+  favicon: assets/icons/favicon.ico
+  logo: assets/icons/android-chrome-512x512.png
   language: 'en'
   font:
     text: Rubik
@@ -59,7 +59,8 @@ plugins:
 nav:
   - Top Page: index.md
   - Tutorial:
-    - 'not implemented': none
+    - 'Overview': tutorial/overview.md
+    - tutorial/preparation.md
   - Instrument:
     - inst/overview.md
     - inst/cmos.md

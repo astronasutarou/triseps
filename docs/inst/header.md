@@ -254,7 +254,7 @@ CMOSID
 : CMOS vendor serial ID (e.g., `FK???????`).
 
 FRAMEID
-: Unique frame ID in the format of `TRCS{DETID:1d}{EXPID:08d}`.
+: Unique frame ID in the format of `TRCS{EXPID:08d}{DETID:1d}`.
 
 BUNIT
 : Unit of the data (basically `ADU`).
