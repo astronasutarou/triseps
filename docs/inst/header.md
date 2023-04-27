@@ -280,7 +280,7 @@ TFRAME
 DAT-FPS
 : Data frame rate in Hz.
 
-FILDISP
+FILTDISP
 : Filter or disperser name.
 
 
