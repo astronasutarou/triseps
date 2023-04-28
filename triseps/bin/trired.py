@@ -24,6 +24,9 @@ def main():
     'output', type=str,
     help='output FITS file')
   parser.add_argument(
+    '-q', '--ql', action='store_true',
+    help='generate a stacked image cube for quick look')
+  parser.add_argument(
     '-f', '--overwrite', action='store_true',
     help='overwrite the output file if exists')
   parser.add_argument(
@@ -53,5 +56,8 @@ def main():
     output.header.add_history(f'dark current subtracted with "{dark_id}".')
     output.data /= flat_hdu.data
     output.header.add_history(f'flat frame corrected with "{dark_id}".')
+    if args.ql is True:
+      assert output.data.ndim == 3
+      output.data = output.data.mean(axis=0)
 
   output.writeto(args.output, overwrite=args.overwrite)
