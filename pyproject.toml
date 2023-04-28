@@ -18,7 +18,7 @@ classifiers = [
   'Programming Language :: Python :: 3.7',
   'Topic :: Scientific/Engineering :: Astronomy',
 ]
-dynamic = ['version']
+dynamic = ['version', 'dependencies']
 
 [project.urls]
 homepage = 'https://bitbucket.org/ryou_ohsawa/triseps/src/master/'
@@ -30,6 +30,7 @@ tripre = 'triseps.bin.tripre:main'
 
 [tool.setuptools.dynamic]
 version = {attr = 'triseps.__version__'}
+dependencies = {file = ['requirements.txt']}
 
 [tool.setuptools.packages.find]
 exclude = ['tests']
