@@ -25,6 +25,7 @@ __header_keywords = {
   'exptime_single': 'exptime1',
   'elapsed_time': 'telapse',
   'frame_interval': 'tframe',
+  'gain_config': 'gaincnfg',
   'gain': 'gain',
   'readnoise': 'rdnoise',
 }
