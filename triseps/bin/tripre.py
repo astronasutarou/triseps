@@ -46,3 +46,5 @@ def main():
 
   hdul = compile_as_fitsfile(database, dark_list, flat_list)
   hdul.writeto(args.output, overwrite=args.overwrite)
+
+  if args.verbose: hdul.info()
