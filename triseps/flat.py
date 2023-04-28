@@ -4,7 +4,8 @@ import astropy.io.fits as fits
 import numpy as np
 
 from .warnings import eprint
-from .utils import chop_reference_pixels, split_dataset, pickup_data
+from .utils import pick, pickup_data
+from .utils import compile_median_cube, split_dataset, generate_calib_id
 
 
 __unique_keys = (
@@ -13,20 +14,19 @@ __unique_keys = (
 )
 
 
-def compile_flatframe(key, hdu_list):
-  phdu = fits.ImageHDU(name=f'flat_{key}')
-  data = []
+def estimate_flatframe(database, frame_id):
+  row = pick(database, frame_id=frame_id)
+  calib_id = generate_calib_id(row[__unique_keys])
+  return f'flat_{calib_id}'
 
-  for hdu in hdu_list:
-    frame_id = hdu.header['frameid']
-    phdu.header.add_history(f'{frame_id}')
-    assert hdu.header['naxis'] == 3
-    median = np.median(hdu.data, axis=0)
-    chopped = chop_reference_pixels(median, key)
-    data.append(chopped)
-  data = np.sum(np.array(data), axis=0)
-  phdu.data = np.array(data) / np.median(data)
-  return phdu
+
+def compile_flatframe(key, hdu_list):
+  flat_hdu = fits.ImageHDU(name=f'flat_{key}')
+  data = compile_median_cube(key, hdu_list, flat_hdu)
+
+  data = np.sum(data, axis=0)
+  flat_hdu.data = np.array(data) / np.median(data)
+  return flat_hdu
 
 
 def generate_flatframe(hdu_list, database):

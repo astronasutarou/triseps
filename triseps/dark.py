@@ -4,7 +4,8 @@ import astropy.io.fits as fits
 import numpy as np
 
 from .warnings import eprint
-from .utils import chop_reference_pixels, split_dataset, pickup_data
+from .utils import pick, pickup_data
+from .utils import compile_median_cube, split_dataset, generate_calib_id
 
 
 __unique_keys = (
@@ -14,19 +15,17 @@ __unique_keys = (
 )
 
 
+def estimate_darkframe(database, frame_id):
+  row = pick(database, frame_id=frame_id)
+  calib_id = generate_calib_id(row[__unique_keys])
+  return f'dark_{calib_id}'
+
+
 def compile_darkframe(key, hdu_list):
   dark_hdu = fits.ImageHDU(name=f'dark_{key}')
-  data = []
+  data = compile_median_cube(key, hdu_list, dark_hdu)
 
-  for hdu in hdu_list:
-    frame_id = hdu.header['frameid']
-    dark_hdu.header.add_history(f'{frame_id}')
-    assert hdu.header['naxis'] == 3
-    median = np.median(hdu.data, axis=0)
-    chopped = chop_reference_pixels(median, key)
-    data.append(chopped)
-
-  dark_hdu.data = np.mean(np.array(data), axis=0)
+  dark_hdu.data = np.mean(data, axis=0)
   return dark_hdu
 
 

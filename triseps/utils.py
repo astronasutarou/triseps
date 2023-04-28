@@ -1,7 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from contextlib import contextmanager
 from astropy.table import unique
+from datetime import datetime
+import numpy as np
 import re
+
+
+@contextmanager
+def timestamp(hdu):
+  t_start = datetime.utcnow()
+  hdu.header.add_history(
+    f'// processing start at {t_start.isoformat()}')
+  try:
+    yield hdu
+  finally:
+    t_end = datetime.utcnow()
+    t_elapse = t_end - t_start
+    hdu.header.add_history(
+      f'// processing completed at {t_end.isoformat()}')
+    hdu.header.add_history(
+      f'// elapsed time: {t_elapse.total_seconds()}s')
+
+
+def pick(database, **options):
+  k, v = options.popitem()
+  return database[database[k] == v][0]
 
 
 def generate_calib_id(unique_key):
@@ -20,12 +44,30 @@ def generate_calib_id(unique_key):
 
 
 def chop_reference_pixels(data, key):
-  reg = re.compile(r'.*_(\d+)x(\d+)\+(\d+)\+(\d+)')
-  res = reg.match(key)
-  if res is not None:
-    ax1, ax2, cx1, cx2 = [int(n) for n in res.groups()]
+  reg = re.compile(r'(.*_)?(\d+)x(\d+)\+(\d+)\+(\d+)')
+  match = reg.match(key).groups()
+  ax1, ax2, cx1, cx2 = [int(n) for n in match[1:]]
+  if data.ndim == 2:
     data = data[cx2:cx2+ax2, cx1:cx1+ax1]
-  return data
+  elif data.ndim == 3:
+    data = data[:, cx2:cx2+ax2, cx1:cx1+ax1]
+  else:
+    raise RuntimeError('wrong size of the image array: {data.shape}')
+  return np.array(data)
+
+
+def compile_median_cube(key, hdu_list, dark_hdu):
+    data = []
+
+    for hdu in hdu_list:
+      frame_id = hdu.header['frameid']
+      dark_hdu.header.add_history(f'{frame_id}')
+      assert hdu.header['naxis'] == 3
+      median = np.median(hdu.data, axis=0)
+      chopped = chop_reference_pixels(median, key)
+      data.append(chopped)
+
+    return data
 
 
 def split_dataset(database, keys):

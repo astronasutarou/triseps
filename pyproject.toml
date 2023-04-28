@@ -27,6 +27,7 @@ documentation = 'https://triseps.readthedocs.io/en/latest/'
 
 [project.scripts]
 tripre = 'triseps.bin.tripre:main'
+trired = 'triseps.bin.trired:main'
 
 [tool.setuptools.dynamic]
 version = {attr = 'triseps.__version__'}
