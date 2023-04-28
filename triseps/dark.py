@@ -3,7 +3,8 @@
 import astropy.io.fits as fits
 import numpy as np
 
-from .utils import chop_reference_pixels
+from .warnings import eprint
+from .utils import chop_reference_pixels, split_dataset, pickup_data
 
 
 __unique_keys = (
@@ -12,51 +13,35 @@ __unique_keys = (
   'effective_area',
 )
 
-__display_keys = (
-  'data_type',
-  'frame_id',
-  'observer',
-  'observation_date',
-  'proposal_id',
-  'object',
-  'exptime_single',
-  'gain',
-  'shutter',
-  'dome_slit',
-  'effective_area',
-)
 
-
-def generate_key(setup):
-  texp, gain, area = setup
-  return f't{texp*1000:08.0f}_g{gain*100:04.0f}_{area}'
-
-
-def generate_darkframe(key, dark):
-  ihdu = fits.ImageHDU()
+def compile_darkframe(key, hdu_list):
+  dark_hdu = fits.ImageHDU(name=f'dark_{key}')
   data = []
-  for d in dark:
-    frame_id = d['frame_id']
-    filename = f'{frame_id}.fits'
-    ihdu.header.add_history(f'{filename}')
-    with fits.open(filename) as hdul:
-      assert hdul[0].header['naxis'] == 3
-      median = np.median(hdul[0].data, axis=0)
-      chopped = chop_reference_pixels(median, key)
-      data.append(chopped)
-  ihdu.data = np.mean(np.array(data), axis=0)
-  return ihdu
+
+  for hdu in hdu_list:
+    frame_id = hdu.header['frameid']
+    dark_hdu.header.add_history(f'{frame_id}')
+    assert hdu.header['naxis'] == 3
+    median = np.median(hdu.data, axis=0)
+    chopped = chop_reference_pixels(median, key)
+    data.append(chopped)
+
+  dark_hdu.data = np.mean(np.array(data), axis=0)
+  return dark_hdu
 
 
 def generate_darkframe(hdu_list, database):
-  for key, subset in split_dataset(database):
-    dark = subset[subset['data_type'] == 'DARK']
-    if len(dark) == 0:
-      eprint(f'Caution: no DARK frames for {key}.')
+  dark_list = []
+
+  for calib_id, subset in split_dataset(database, __unique_keys):
+    db_dark = subset[subset['data_type'] == 'DARK']
+    hdu_dark = pickup_data(hdu_list, frameid=db_dark['frame_id'])
+
+    if len(db_dark) == 0:
+      eprint(f'Caution: no DARK frames for {calib_id}.')
       continue
-    print(f'Generate dark_{key} from {len(dark)} frames.')
 
-    phdu = generate_darkframe(key, dark)
+    eprint(f'Generate dark_{calib_id} from {len(db_dark)} frames.')
+    dark_list.append(compile_darkframe(calib_id, hdu_dark))
 
-    filename = f'dark_{key}.fits'
-    phdu.writeto(filename, overwrite=args.overwrite)
+  return dark_list

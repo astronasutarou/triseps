@@ -4,7 +4,10 @@ import astropy.io.fits as fits
 import sys
 
 from ..assertion import quick_sanity_check
-from ..compile import compile_database
+from ..database import compile_database
+from ..dark import generate_darkframe
+from ..flat import generate_flatframe
+from ..compile import compile_as_fitsfile
 
 
 def main():
@@ -38,4 +41,8 @@ def main():
 
   quick_sanity_check(database)
 
-  # write_as_fitsfile(args.output, database, overwrite=args.overwrite)
+  dark_list = generate_darkframe(hdu_list, database)
+  flat_list = generate_flatframe(hdu_list, database)
+
+  hdul = compile_as_fitsfile(database, dark_list, flat_list)
+  hdul.writeto(args.output, overwrite=args.overwrite)
