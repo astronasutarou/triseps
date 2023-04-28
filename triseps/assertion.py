@@ -4,11 +4,11 @@ from .warnings import DataWarning, warn
 
 
 __all__ = [
-    'sanity_check',
+    'quick_sanity_check',
 ]
 
 
-def sanity_check(database):
+def quick_sanity_check(database):
     check_dark_frame(database)
     check_flat_frame(database)
     check_object_frame(database)
