@@ -1,0 +1,10 @@
+[flake8]
+indent-size = 2
+
+# E401: multiple import one line
+extend-ignore = 
+    E401, 
+
+# F401: imported but not used
+per-file-ignores =
+    __init__.py: F401

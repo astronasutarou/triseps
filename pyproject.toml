@@ -1,0 +1,35 @@
+[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'triseps'
+description = 'TriCCS Source Exraction Programs'
+readme = 'README.md'
+requires-python = '>=3.7'
+license = {file = 'LICENSE'}
+authors = [
+    { name = 'Ryou Ohsawa', email = 'ryou.ohsawa@nao.ac.jp' },
+]
+classifiers = [
+  'Development Status :: 3 - Alpha',
+  'Intended Audience :: Science/Research',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.7',
+  'Topic :: Scientific/Engineering :: Astronomy',
+]
+dynamic = ['version']
+
+[project.urls]
+homepage = 'https://bitbucket.org/ryou_ohsawa/triseps/src/master/'
+repository = 'https://bitbucket.org/ryou_ohsawa/triseps/src/master/'
+documentation = 'https://triseps.readthedocs.io/en/latest/'
+
+[project.scripts]
+tripre = 'triseps.bin.tripre:main'
+
+[tool.setuptools.dynamic]
+version = {attr = 'triseps.__version__'}
+
+[tool.setuptools.packages.find]
+exclude = ['tests']
