@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import astropy.io.fits as fits
 import numpy as np
 
 from .warnings import eprint
@@ -22,10 +21,9 @@ def estimate_darkframe(database, frame_id):
 
 
 def compile_darkframe(key, hdu_list):
-  dark_hdu = fits.ImageHDU(name=f'dark_{key}')
-  data = compile_median_cube(key, hdu_list, dark_hdu)
+  dark_hdu = compile_median_cube(hdu_list, name=f'dark_{key}')
 
-  dark_hdu.data = np.mean(data, axis=0)
+  dark_hdu.data = np.mean(dark_hdu.data, axis=0)
   return dark_hdu
 
 
@@ -37,10 +35,10 @@ def generate_darkframe(hdu_list, database):
     hdu_dark = pickup_data(hdu_list, frameid=db_dark['frame_id'])
 
     if len(db_dark) == 0:
-      eprint(f'Caution: no DARK frames for {calib_id}.')
+      eprint(f'INFO: no dark frames for {calib_id}.')
       continue
 
-    eprint(f'Generate dark_{calib_id} from {len(db_dark)} frames.')
+    eprint(f'INFO: generate dark_{calib_id} from {len(db_dark)} frames.')
     dark_list.append(compile_darkframe(calib_id, hdu_dark))
 
   return dark_list

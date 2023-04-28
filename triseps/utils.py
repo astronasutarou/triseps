@@ -3,8 +3,13 @@
 from contextlib import contextmanager
 from astropy.table import unique
 from datetime import datetime
+import astropy.io.fits as fits
 import numpy as np
 import re
+
+from .warnings import warn
+from .database import effective_area
+from .sanity_check import is_saturated
 
 
 @contextmanager
@@ -56,18 +61,25 @@ def chop_reference_pixels(data, key):
   return np.array(data)
 
 
-def compile_median_cube(key, hdu_list, dark_hdu):
+def compile_median_cube(hdu_list, name):
+    cube = fits.ImageHDU(name=name)
     data = []
 
     for hdu in hdu_list:
       frame_id = hdu.header['frameid']
-      dark_hdu.header.add_history(f'{frame_id}')
+      region = effective_area(hdu.header)
+      if is_saturated(hdu) is True:
+        warn(frame_id, 'skipped due to saturation.')
+        continue
       assert hdu.header['naxis'] == 3
-      median = np.median(hdu.data, axis=0)
-      chopped = chop_reference_pixels(median, key)
-      data.append(chopped)
 
-    return data
+      median = np.median(hdu.data, axis=0)
+      chopped = chop_reference_pixels(median, region)
+      data.append(chopped)
+      cube.header.add_history(f'{frame_id}')
+
+    cube.data = data
+    return cube
 
 
 def split_dataset(database, keys):

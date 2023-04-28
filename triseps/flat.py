@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import astropy.io.fits as fits
 import numpy as np
 
 from .warnings import eprint
@@ -21,11 +20,10 @@ def estimate_flatframe(database, frame_id):
 
 
 def compile_flatframe(key, hdu_list):
-  flat_hdu = fits.ImageHDU(name=f'flat_{key}')
-  data = compile_median_cube(key, hdu_list, flat_hdu)
+  flat_hdu = compile_median_cube(hdu_list, name=f'flat_{key}')
 
-  data = np.sum(data, axis=0)
-  flat_hdu.data = np.array(data) / np.median(data)
+  data = np.sum(flat_hdu.data, axis=0)
+  flat_hdu.data = data / np.median(data)
   return flat_hdu
 
 
@@ -37,10 +35,10 @@ def generate_flatframe(hdu_list, database):
     hdu_flat = pickup_data(hdu_list, frameid=db_flat['frame_id'])
 
     if len(db_flat) == 0:
-      eprint(f'Caution: no flat frames for {calib_id}.')
+      eprint(f'INFO: no flat frames for {calib_id}.')
       continue
 
-    print(f'Generate flat_{calib_id} from {len(db_flat)} frames.')
+    eprint(f'INFO: generate flat_{calib_id} from {len(db_flat)} frames.')
     flat_list.append(compile_flatframe(calib_id, hdu_flat))
 
   return flat_list
