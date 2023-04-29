@@ -23,8 +23,8 @@ theme:
     primary: white
     accent: orange
   features:
-    - navigation.sections
     - header.autohide
+    - navigation.indexes
 
 extra_css:
   - assets/stylesheets/local.css
@@ -59,12 +59,18 @@ plugins:
 nav:
   - Top Page: index.md
   - Tutorial:
-    - 'Overview': tutorial/overview.md
+    - tutorial/index.md
     - tutorial/preparation.md
   - Instrument:
-    - inst/overview.md
+    - inst/index.md
     - inst/cmos.md
     - inst/header.md
+  - Reference:
+    - reference/index.md
+    - 'tripre': reference/tripre.md 
+    - 'trired': reference/trired.md 
+    - 'triview': reference/triview.md 
+    - 'database': reference/database.md
   - Links:
     - bitbucket: https://bitbucket.org/ryou_ohsawa/triseps/src/master/
     - PyPi: https://pypi.org/project/triseps/
