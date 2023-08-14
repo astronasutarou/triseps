@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from astropy.table import QTable
+import astropy.io.fits as fits
 import sys
 
 from ..utils import split_dataset
 
 
-def display(database, verbose=False):
+def display_frame(database, verbose=False):
+  ''' Display the frames in the database '''
   columns = (
     'frame_id', 'observer', 'timestamp',
     'object', 'filter', 'ra', 'dec',
@@ -18,17 +20,14 @@ def display(database, verbose=False):
   print('')
 
 
-def main():
-  from argparse import ArgumentParser as ap
-  parser = ap(
-    description='view TriCCS calibration database')
-
+def setup_frame_parser(parser):
+  ''' Setup argument parser for "frame" command '''
   parser.add_argument(
     'database', type=str,
-    help='calibratoin database file')
+    help='calibration database file')
   parser.add_argument(
-    '--category', type=str, action='store',
-    choices=('OBJECT', 'DARK', 'FLAT'),
+    '-c', '--category', type=str, action='store', default='OBJECT',
+    choices=('OBJECT', 'DARK', 'FLAT', 'ALL'),
     help='specify "data_type"')
   parser.add_argument(
     '-k', '--key', type=str, nargs='+', action='store',
@@ -37,16 +36,63 @@ def main():
     '-v', '--verbose', action='store_true',
     help='enable debug messages')
 
+  def handler_frame(args):
+      db = QTable.read(args.database)
+
+      if args.category != 'ALL':
+        db = db[db['data_type'] == args.category]
+
+      if args.key is None:
+        display_frame(db, verbose=args.verbose)
+      else:
+        for k, sub in split_dataset(db, args.key):
+          print(f'## {k}')
+          display_frame(sub, verbose=args.verbose)
+
+  parser.set_defaults(handler=handler_frame)
+
+
+def setup_calib_parser(parser):
+  ''' Setup argument parser for "calib" command '''
+  parser.add_argument(
+    'database', type=str,
+    help='calibration database file')
+
+  def handler_calib(args):
+    db = []
+    hdul = fits.open(args.database)
+
+    for hdu in hdul:
+      header = hdu.header
+      if header.get('CATEGORY') == 'CALIBRATION':
+        db.append({
+          'type': header.get('OBJECT', 'ERROR'),
+          'n_frame': header.get('NFRAME', -1),
+          'key': header.get('EXTNAME', 'ERROR'),
+        })
+    db = QTable(db)
+    print(db)
+
+  parser.set_defaults(handler=handler_calib)
+
+
+def main():
+  from argparse import ArgumentParser as ap
+  parser = ap(
+    description='view TriCCS calibration database')
+
+  subparser = parser.add_subparsers(required=True)
+  frame = subparser.add_parser(
+    'frame', help='display the source frames')
+  calib = subparser.add_parser(
+    'calib', help='display the generated calibration frames.')
+
+  setup_frame_parser(frame)
+  setup_calib_parser(calib)
+
   args = parser.parse_args(sys.argv[1:])
 
-  db = QTable.read(args.database)
-
-  if args.category is not None:
-    db = db[db['data_type'] == args.category]
-
-  if args.key is None:
-    display(db, verbose=args.verbose)
+  if hasattr(args, 'handler'):
+    args.handler(args)
   else:
-    for k, sub in split_dataset(db, args.key):
-      print(f'## {k}')
-      display(sub, verbose=args.verbose)
+    parser.print_help()
