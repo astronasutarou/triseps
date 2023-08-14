@@ -65,6 +65,7 @@ def compile_median_cube(hdu_list, name):
     cube = fits.ImageHDU(name=name)
     data = []
 
+    cube.header.add_history('Source Frames:')
     for hdu in hdu_list:
       frame_id = hdu.header['frameid']
       region = effective_area(hdu.header)
@@ -76,7 +77,7 @@ def compile_median_cube(hdu_list, name):
       median = np.median(hdu.data, axis=0)
       chopped = chop_reference_pixels(median, region)
       data.append(chopped)
-      cube.header.add_history(f'{frame_id}')
+      cube.header.add_history(f'  - {frame_id}')
 
     cube.data = data
     return cube
