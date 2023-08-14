@@ -20,7 +20,7 @@ yyyymmdd
 ```
 
 1. [Preparation](./preparation.md)
-1. Basic calibration
+1. [Basic calibration](./reduction.md)
 1. Astrometric calibration
 1. Photometry
 1. Photometric calibration
