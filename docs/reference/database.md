@@ -8,7 +8,7 @@ The database file is compiled as a FITS file. The second HDU extension contains 
 
 
 ## Columns
-The database contains several columns collected from FITS headers. This section explains the columns in the database made by `trimkdb`.
+The database contains several columns collected from FITS headers. This section explains the columns in the database made by `tripre`.
 
 - `EXPID`
 - `DETID`
