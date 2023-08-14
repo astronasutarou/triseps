@@ -55,12 +55,15 @@ markdown_extensions:
 
 plugins:
   - search
+  - git-revision-date-localized:
+      type: date
 
 nav:
   - Top Page: index.md
   - Tutorial:
     - tutorial/index.md
     - tutorial/preparation.md
+    - tutorial/reduction.md
   - Instrument:
     - inst/index.md
     - inst/cmos.md
