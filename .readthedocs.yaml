@@ -7,7 +7,7 @@ build:
 
 mkdocs:
   configuration: mkdocs.yml
-  fall_on_warning: false
+  fail_on_warning: false
 
 python:
   install:
