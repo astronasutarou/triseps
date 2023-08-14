@@ -5,6 +5,10 @@ build:
   tools:
     python: "3.11"
 
+mkdocs:
+  configuration: mkdocs.yml
+  fall_on_warning: false
+
 python:
   install:
   - requirements: docs/requirements.txt
