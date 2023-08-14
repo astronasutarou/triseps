@@ -6,7 +6,7 @@ from astropy.table import QTable
 __header_keywords = {
   'frame_id': 'frameid',
   'exp_id': 'expid',
-  'detector_id': 'detid',
+  'det_id': 'detid',
   'observer': 'observer',
   'proposal_id': 'prop-id',
   'observation_mode': 'obs-mod',
@@ -52,7 +52,7 @@ def build_record(header):
 
   Arguments:
     header [Header]:
-    A FITS header instance.
+        A FITS header instance.
 
   Returns:
     A dictionary of the extracted items.
@@ -67,6 +67,7 @@ def build_record(header):
 
 
 def compile_database(hdu_list):
+  ''' Compile a database from multiple FITS HDUs '''
   db = []
   for hdu in hdu_list:
     db.append(build_record(hdu.header))
