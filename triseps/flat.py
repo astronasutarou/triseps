@@ -8,6 +8,7 @@ from .utils import compile_median_cube, split_dataset, generate_calib_id
 
 
 __unique_keys = (
+  'det_id',
   'filter',
   'effective_area',
 )
@@ -21,6 +22,10 @@ def estimate_flatframe(database, frame_id):
 
 def compile_flatframe(key, hdu_list):
   flat_hdu = compile_median_cube(hdu_list, name=f'flat_{key}')
+
+  flat_hdu.header['CATEGORY'] = 'CALIBRATION'
+  flat_hdu.header['OBJECT'] = 'FLAT'
+  flat_hdu.header['NFRAME'] = flat_hdu.data.shape[0]
 
   data = np.sum(flat_hdu.data, axis=0)
   flat_hdu.data = data / np.median(data)
