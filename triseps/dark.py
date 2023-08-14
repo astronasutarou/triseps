@@ -8,6 +8,7 @@ from .utils import compile_median_cube, split_dataset, generate_calib_id
 
 
 __unique_keys = (
+  'det_id',
   'exptime_single',
   'gain',
   'effective_area',
@@ -22,6 +23,10 @@ def estimate_darkframe(database, frame_id):
 
 def compile_darkframe(key, hdu_list):
   dark_hdu = compile_median_cube(hdu_list, name=f'dark_{key}')
+
+  dark_hdu.header['CATEGORY'] = 'CALIBRATION'
+  dark_hdu.header['OBJECT'] = 'DARK'
+  dark_hdu.header['NFRAME'] = dark_hdu.data.shape[0]
 
   dark_hdu.data = np.mean(dark_hdu.data, axis=0)
   return dark_hdu
