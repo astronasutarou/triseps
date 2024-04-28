@@ -76,6 +76,30 @@ def setup_calib_parser(parser):
   parser.set_defaults(handler=handler_calib)
 
 
+def setup_extract_parser(parser):
+  ''' Setup argument parser for "extract" command '''
+  parser.add_argument(
+    'database', type=str,
+    help='calibration database file')
+  parser.add_argument(
+    'key', type=str,
+    help='calibration file key')
+  parser.add_argument(
+    'output', type=str,
+    help='output filename')
+  parser.add_argument(
+    '-f', '--overwrite', action='store_true',
+    help='overwrite the output file if exists')
+
+  def handler_extract(args):
+    hdul = fits.open(args.database)
+
+    hdu = hdul[args.key]
+    hdu.writeto(args.output, overwrite=args.overwrite)
+
+  parser.set_defaults(handler=handler_extract)
+
+
 def main():
   from argparse import ArgumentParser as ap
   parser = ap(
@@ -85,10 +109,13 @@ def main():
   frame = subparser.add_parser(
     'frame', help='display the source frames')
   calib = subparser.add_parser(
-    'calib', help='display the generated calibration frames.')
+    'calib', help='display the generated calibration frames')
+  extract = subparser.add_parser(
+    'extract', help='extract a calibration frame bye key')
 
   setup_frame_parser(frame)
   setup_calib_parser(calib)
+  setup_extract_parser(extract)
 
   args = parser.parse_args(sys.argv[1:])
 
