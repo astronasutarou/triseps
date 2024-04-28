@@ -17,7 +17,7 @@ def main():
 
   parser.add_argument(
     'output', type=str,
-    help='output filename')
+    help='output filename of the calibration database')
   parser.add_argument(
     'fits', nargs='+', type=str,
     help='list of input FITS files')

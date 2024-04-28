@@ -14,13 +14,13 @@ from .sanity_check import is_saturated
 
 @contextmanager
 def timestamp(hdu):
-  t_start = datetime.utcnow()
+  t_start = datetime.now(datetime.UTC)
   hdu.header.add_history(
     f'// processing start at {t_start.isoformat()}')
   try:
     yield hdu
   finally:
-    t_end = datetime.utcnow()
+    t_end = datetime.now(datetime.UTC)
     t_elapse = t_end - t_start
     hdu.header.add_history(
       f'// processing completed at {t_end.isoformat()}')
