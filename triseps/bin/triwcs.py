@@ -27,7 +27,7 @@ def main():
   args = parser.parse_args(sys.argv[1:])
 
   hdul = fits.open(args.input)
-  hdul[0] = solve_field(hdul[0])
+  hdul[0] = solve_field(hdul[0], verbose=args.verbose)
 
   hdul.writeto(args.output, overwrite=args.overwrite)
 

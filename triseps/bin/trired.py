@@ -8,6 +8,7 @@ import sys
 from ..utils import pick, chop_reference_pixels, timestamp
 from ..dark import estimate_darkframe
 from ..flat import estimate_flatframe
+from ..astrometry import solve_field
 from ..warnings import eprint
 
 
@@ -31,6 +32,9 @@ def main():
   parser.add_argument(
     '-s', '--stack', action='store_true',
     help='generate a stacked image')
+  parser.add_argument(
+    '-w', '--wcs', action='store_true',
+    help='calibrate the wcs info using astrometry.net')
   parser.add_argument(
     '--track', action='store', type=str,
     help='tracking file')
@@ -71,6 +75,9 @@ def main():
 
     output.data /= flat_hdu.data
     hist(f'flat frame corrected with {flat_id}.')
+
+    if args.wcs is True:
+      output = solve_field(output, verbose=args.verbose)
 
     if args.ql is True:
       assert output.data.ndim == 3

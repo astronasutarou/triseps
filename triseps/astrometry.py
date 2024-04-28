@@ -68,7 +68,7 @@ def drop_naxis3_keywords(header):
     header (Header): a fits header object
 
   Return:
-    Header: a fits header object without NAXIS3 keywords
+    Header: a FITS header object without NAXIS3 keywords
   '''
   header.set('NAXIS', 2)
   for key in __keywords_naxis3: header.remove(key, ignore_missing=True)
@@ -82,7 +82,7 @@ def wcs_without_naxis3(header):
     header (Header): fits header object
 
   Return:
-    header: a header object without naxis3 keywords
+    WCSObj: a wcs object without NAXIS3 keywords
   '''
   with warnings.catch_warnings():
     warnings.filterwarnings('ignore')
@@ -99,7 +99,7 @@ def wcspaste(src, dst):
     dst (Header): a header object of destination
 
   Return:
-    none: nothing returned
+    Header: an updated Header object
   '''
   keywords = [
     'CTYPE1', 'CTYPE2', 'CRVAL1', 'CRVAL2', 'CRPIX1', 'CRPIX2',
@@ -116,17 +116,19 @@ def wcspaste(src, dst):
   if 'SIP' in src.header['CTYPE2']:
     for key in sipB_keywords: dst.header[key] = src.header.get(key, 0.0)
 
+  return dst
 
-def solve_field(src, **options):
+
+def solve_field(src, verbose=False):
   ''' calibrate astrometry infomation
 
   Parameters:
     src     (ImageHDU): original ImageHDU object
 
   Return:
-    int: sequential ID for the registered wcs info
+    ImageHDU: a FITS ImageHDU with the updated WCS information
   '''
-  frame_id = src.header.get('FRAME_ID')
+  frame_id = src.header.get('FRAMEID')
   filename = '{}.fits'.format(frame_id)
   wcsfile  = '{}.wcs'.format(frame_id)
   axyfile  = '{}.axy'.format(frame_id)
@@ -137,7 +139,8 @@ def solve_field(src, **options):
     ra, dec = wcs_src.all_pix2world(((naxis1/2.0, naxis2/2.0),), 1)[0]
 
     if src.data.ndim == 3:
-      img = np.mean(src.data, axis=0)
+      # use the first frame in case of non-sidereal tracking
+      img = src.data[0]
     else:
       img = src.data
     wcs = fits.PrimaryHDU(data=img)
@@ -150,9 +153,25 @@ def solve_field(src, **options):
            '--scale-low', str(scale_low), '--scale-high', str(scale_high),
            '--scale-units', 'arcminwidth', '--axy', axyfile,
            '--new-fits', 'none', '--wcs', wcsfile, filename]
-    with open(os.devnull, 'w') as devnull:
-      check_call(cmd, stdout=devnull, stderr=devnull)
-      # subprocess.check_call(cmd)
+
+    if verbose is False:
+      with open(os.devnull, 'w') as devnull:
+        check_call(cmd, stdout=devnull, stderr=devnull)
+    else:
+      check_call(cmd)
+
+    cmd = [__solve_field, '--no-plots',
+           '--continue', '--parity', 'pos',
+           '--ra', str(ra), '--dec', str(dec), '--radius', '1.0',
+           '--pixel-error', '0.2', '--verify', wcsfile,
+           '--new-fits', 'none', '--wcs', wcsfile, axyfile]
+
+    if verbose is False:
+      with open(os.devnull, 'w') as devnull:
+        check_call(cmd, stdout=devnull, stderr=devnull)
+    else:
+      check_call(cmd)
+
     wcs = fits.open(wcsfile)[0]
 
     src.header['WCSVALID'] = True

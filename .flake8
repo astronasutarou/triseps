@@ -1,9 +1,11 @@
 [flake8]
 indent-size = 2
 
+# E221: multiple spaces before operator
 # E401: multiple imports on one line
 # E701: multiple statements on one line (colon)
 extend-ignore =
+    E221,
     E401,
     E701,
 
