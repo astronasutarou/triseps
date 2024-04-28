@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from contextlib import contextmanager
 from astropy.table import unique
-from datetime import datetime
+from datetime import UTC, datetime
 import astropy.io.fits as fits
 import numpy as np
 import re
@@ -14,13 +14,13 @@ from .sanity_check import is_saturated
 
 @contextmanager
 def timestamp(hdu):
-  t_start = datetime.now(datetime.UTC)
+  t_start = datetime.now(UTC)
   hdu.header.add_history(
     f'// processing start at {t_start.isoformat()}')
   try:
     yield hdu
   finally:
-    t_end = datetime.now(datetime.UTC)
+    t_end = datetime.now(UTC)
     t_elapse = t_end - t_start
     hdu.header.add_history(
       f'// processing completed at {t_end.isoformat()}')
