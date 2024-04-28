@@ -7,8 +7,8 @@
 First, build a database file using the following command. The first argument is the name of the database. The following arguments are observed FITS files, including science and calibration frames.
 
 ``` console
-$ cd data-a
-$ tripre database.fits TRCS*0.fits
+$ cd yyyymmdd
+$ tripre database.fits TRCS*.fits
 ```
 
 The following lines are an example of messages shown in a terminal.

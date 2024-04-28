@@ -14,4 +14,8 @@ The following operations are applied:
 
 The input file is expected to be a FITS data cube. The output file is the reference-trimmed, dark-subtracted, and flat-corrected data cube.
 
+If `--wcs` option is used, `trired` try to calibrate the WCS information. This option depends on `solve-field` of [astrometry.net][dstn]. Make sure taht the astrometry.net and its index files are properly installed. `triseps` is tested on astrometry.net version 0.94.
+
 There are two options to obtain the result as a 2-dimensional image. The `--ql` option is used to generate a quick-look image. The mean values along with `NAXIS3` are calculated. The `--stack` option generates a 3&sigma;-clipped mean image instead of a simple average.
+
+[dstn]: http://astrometry.net/

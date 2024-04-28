@@ -1,22 +1,19 @@
 # Overview of TriCCS data reduction
 
-In this tutorial, we assume that obtained data are stored as follows. The FITS files obtained by ARM-A, -B, and -C are respectively stored in `data-a`, `data-b`, and `data-c`. Each directory contains scientific and calibration frames.
+In this tutorial, we assume that obtained data are stored as follows. The FITS files obtained by ARM-A, -B, and -C are respectively stored in a single directory.
 
 
 ``` python
 yyyymmdd
-├─data-a  # ARM-A
-│   ├─ TRCSnnnnnnn0.fits
-│   ├─ TRCSnnnnnnn0.fits
-│   └─ ...
-├─data-b  # ARM-B
-│   ├─ TRCSnnnnnnn1.fits
-│   ├─ TRCSnnnnnnn1.fits
-│   └─ ...
-└─data-c  # ARM-C
-     ├─ TRCSnnnnnnn2.fits
-     ├─ TRCSnnnnnnn2.fits
-     └─ ...
+├─ TRCSnnnnnnn0.fits # ARM-A
+├─ TRCSnnnnnnn0.fits
+├─ ...
+├─ TRCSnnnnnnn1.fits # ARM-B
+├─ TRCSnnnnnnn1.fits
+├─ ...
+├─ TRCSnnnnnnn2.fits # ARM-C
+├─ TRCSnnnnnnn2.fits
+└─ ...
 ```
 
 1. [Preparation](./preparation.md)

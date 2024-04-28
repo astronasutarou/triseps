@@ -27,14 +27,14 @@ def main():
     'output', type=str,
     help='output FITS file')
   parser.add_argument(
+    '-w', '--wcs', action='store_true',
+    help='calibrate the wcs info using astrometry.net')
+  parser.add_argument(
     '-q', '--ql', action='store_true',
     help='generate a stacked image cube for quick look')
   parser.add_argument(
     '-s', '--stack', action='store_true',
     help='generate a stacked image')
-  parser.add_argument(
-    '-w', '--wcs', action='store_true',
-    help='calibrate the wcs info using astrometry.net')
   parser.add_argument(
     '--track', action='store', type=str,
     help='tracking file')
