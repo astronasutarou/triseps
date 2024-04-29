@@ -68,11 +68,13 @@ nav:
     - inst/index.md
     - inst/cmos.md
     - inst/header.md
+    - inst/nonsidereal.md
   - Reference:
     - reference/index.md
     - 'tripre': reference/tripre.md 
     - 'trired': reference/trired.md 
     - 'triview': reference/triview.md 
+    - 'triwcs': reference/triwcs.md
     - 'database': reference/database.md
   - Links:
     - bitbucket: https://bitbucket.org/ryou_ohsawa/triseps/src/master/
