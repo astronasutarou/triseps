@@ -1,5 +1,5 @@
-name: Build sidex
-description: Build sidex distributions, install the wheel, and verify import.
+name: Build package
+description: Build triseps distributions, install the wheel, and verify import.
 
 runs:
   using: composite
@@ -21,4 +21,4 @@ runs:
     - name: Check import
       shell: bash
       working-directory: /tmp
-      run: python -c "import sidex; print(sidex.__file__)"
+      run: python -c "import triseps; print(triseps.__file__)"
