@@ -33,6 +33,7 @@ __header_keywords = {
 
 def effective_area(header):
     """Construct Photo-sensitive area indicator"""
+
     c1 = header['efp-min1'] - 1
     c2 = header['efp-min2'] - 1
     r1 = header['efp-rng1']
@@ -42,6 +43,7 @@ def effective_area(header):
 
 def dome_slit(header):
     """Construct Dome Slit status"""
+
     s1 = header['dom-sstr'].lower()
     s2 = header['dom-send'].lower()
     return s1 if s1 == s2 else 'error'
@@ -57,6 +59,7 @@ def build_record(header):
     Returns:
       A dictionary of the extracted items.
     """
+
     rec = {}
     for key, kw in __header_keywords.items():
         rec.update({key: header[kw]})
@@ -68,6 +71,7 @@ def build_record(header):
 
 def compile_database(hdu_list):
     """Compile a database from multiple FITS HDUs"""
+
     db = []
     for hdu in hdu_list:
         db.append(build_record(hdu.header))

@@ -18,6 +18,7 @@ def read_track(filename):
     The first line is the target/range description. Subsequent CSV rows
     contain calendar date, JD, Sun, Moon, RA (hour angle), Dec, Az, El.
     """
+
     jd, ra, dec = [], [], []
     with open(filename, encoding='utf-8') as stream:
         next(stream, None)
@@ -44,6 +45,7 @@ def read_track(filename):
 
 def frame_times(header, count):
     """Return exposure midpoints; GEXP-STR is the first exposure start."""
+
     if count < 1:
         raise ValueError('image cube must contain at least one frame')
     interval = float(header['TFRAME'])
@@ -60,6 +62,7 @@ def frame_times(header, count):
 
 def interpolate_track(times, positions, requested):
     """Interpolate unit vectors, avoiding the RA wrap discontinuity."""
+
     samples = (times - times[0]).to_value(u.s)
     query = (requested - times[0]).to_value(u.s)
     if np.any(query < samples[0]) or np.any(query > samples[-1]):
@@ -83,6 +86,7 @@ def interpolate_track(times, positions, requested):
 
 def tracking_offsets(header, count, filename, reverse=False):
     """Return applied (x, y) pixel translations relative to frame zero."""
+
     times, positions = read_track(filename)
     midpoints = frame_times(header, count)
     targets = interpolate_track(times, positions, midpoints)
@@ -109,6 +113,7 @@ def shift_bilinear(data, dx, dy):
     outside the image or nonfinite. Zero-weight neighbours do not invalidate
     pixels, so a zero/integer shift preserves valid boundary pixels.
     """
+
     data = np.asarray(data, dtype=float)
     if data.ndim != 2 or not np.all(np.isfinite([dx, dy])):
         raise ValueError(
@@ -147,6 +152,7 @@ def align_cube(hdu, filename, reverse=False):
     Spatial WCS describes the first frame. For target alignment it is only
     a reference-time sky mapping, not the sky mapping of every shifted frame.
     """
+
     if hdu.data.ndim != 3:
         raise ValueError('tracking requires a 3D FITS image cube')
     times, offsets = tracking_offsets(
