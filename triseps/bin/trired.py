@@ -13,83 +13,87 @@ from ..warnings import eprint
 
 
 def main():
-  from argparse import ArgumentParser as ap
-  parser = ap(
-    description='reduce TriCCS data usnig calibration database')
+    from argparse import ArgumentParser as ap
 
-  parser.add_argument(
-    'database', type=str,
-    help='calibratoin database file')
-  parser.add_argument(
-    'fits', type=str,
-    help='input FITS file')
-  parser.add_argument(
-    'output', type=str,
-    help='output FITS file')
-  parser.add_argument(
-    '-w', '--wcs', action='store_true',
-    help='calibrate the wcs info using astrometry.net')
-  parser.add_argument(
-    '-q', '--ql', action='store_true',
-    help='generate a stacked image cube for quick look')
-  parser.add_argument(
-    '-s', '--stack', action='store_true',
-    help='generate a stacked image')
-  parser.add_argument(
-    '--track', action='store', type=str,
-    help='tracking file')
-  parser.add_argument(
-    '-f', '--overwrite', action='store_true',
-    help='overwrite the output file if exists')
-  parser.add_argument(
-    '-v', '--verbose', action='store_true',
-    help='enable debug messages')
+    parser = ap(description='reduce TriCCS data usnig calibration database')
 
-  args = parser.parse_args(sys.argv[1:])
+    parser.add_argument('database', type=str, help='calibratoin database file')
+    parser.add_argument('fits', type=str, help='input FITS file')
+    parser.add_argument('output', type=str, help='output FITS file')
+    parser.add_argument(
+        '-w',
+        '--wcs',
+        action='store_true',
+        help='calibrate the wcs info using astrometry.net',
+    )
+    parser.add_argument(
+        '-q',
+        '--ql',
+        action='store_true',
+        help='generate a stacked image cube for quick look',
+    )
+    parser.add_argument(
+        '-s', '--stack', action='store_true', help='generate a stacked image'
+    )
+    parser.add_argument(
+        '--track', action='store', type=str, help='tracking file'
+    )
+    parser.add_argument(
+        '-f',
+        '--overwrite',
+        action='store_true',
+        help='overwrite the output file if exists',
+    )
+    parser.add_argument(
+        '-v', '--verbose', action='store_true', help='enable debug messages'
+    )
 
-  db = QTable.read(args.database)
-  hdul = fits.open(args.database)
+    args = parser.parse_args(sys.argv[1:])
 
-  input = fits.open(args.fits)[0]
-  frame_id = input.header['frameid']
+    db = QTable.read(args.database)
+    hdul = fits.open(args.database)
 
-  output = fits.PrimaryHDU(data=None, header=input.header)
+    input = fits.open(args.fits)[0]
+    frame_id = input.header['frameid']
 
-  dark_id = estimate_darkframe(db, frame_id)
-  dark_hdu = hdul[dark_id]
+    output = fits.PrimaryHDU(data=None, header=input.header)
 
-  flat_id = estimate_flatframe(db, frame_id)
-  flat_hdu = hdul[flat_id]
+    dark_id = estimate_darkframe(db, frame_id)
+    dark_hdu = hdul[dark_id]
 
-  with timestamp(output):
-    def hist(message):
-      output.header.add_history(message)
-      eprint(f'INFO: {message}')
+    flat_id = estimate_flatframe(db, frame_id)
+    flat_hdu = hdul[flat_id]
 
-    area = pick(db, frame_id=frame_id)['effective_area']
-    output.data = chop_reference_pixels(input.data, area)
-    hist(f'photo-sensitive area {area} is extracted.')
+    with timestamp(output):
 
-    output.data -= dark_hdu.data
-    hist(f'dark current subtracted with {dark_id}.')
+        def hist(message):
+            output.header.add_history(message)
+            eprint(f'INFO: {message}')
 
-    output.data /= flat_hdu.data
-    hist(f'flat frame corrected with {flat_id}.')
+        area = pick(db, frame_id=frame_id)['effective_area']
+        output.data = chop_reference_pixels(input.data, area)
+        hist(f'photo-sensitive area {area} is extracted.')
 
-    if args.wcs is True:
-      output = solve_field(output, verbose=args.verbose)
+        output.data -= dark_hdu.data
+        hist(f'dark current subtracted with {dark_id}.')
 
-    if args.ql is True:
-      assert output.data.ndim == 3
-      output.data = output.data.mean(axis=0)
-      hist('image cube is stacked for quick look.')
-    elif args.stack is True:
-      assert output.data.ndim == 3
-      if args.track is None:
-        stats = sigma_clipped_stats(output.data, axis=0)
-        output.data = stats[0]
-        hist('3-sigma clipped mean is calculated.')
-      else:
-        pass
+        output.data /= flat_hdu.data
+        hist(f'flat frame corrected with {flat_id}.')
 
-  output.writeto(args.output, overwrite=args.overwrite)
+        if args.wcs is True:
+            output = solve_field(output, verbose=args.verbose)
+
+        if args.ql is True:
+            assert output.data.ndim == 3
+            output.data = output.data.mean(axis=0)
+            hist('image cube is stacked for quick look.')
+        elif args.stack is True:
+            assert output.data.ndim == 3
+            if args.track is None:
+                stats = sigma_clipped_stats(output.data, axis=0)
+                output.data = stats[0]
+                hist('3-sigma clipped mean is calculated.')
+            else:
+                pass
+
+    output.writeto(args.output, overwrite=args.overwrite)

@@ -11,40 +11,44 @@ from ..compile import compile_as_fitsfile
 
 
 def main():
-  from argparse import ArgumentParser as ap
-  parser = ap(
-    description='compile TriCCS calibration database')
+    from argparse import ArgumentParser as ap
 
-  parser.add_argument(
-    'output', type=str,
-    help='output filename of the calibration database')
-  parser.add_argument(
-    'fits', nargs='+', type=str,
-    help='list of input FITS files')
-  parser.add_argument(
-    '-f', '--overwrite', action='store_true',
-    help='overwrite the output file if exists')
-  parser.add_argument(
-    '-v', '--verbose', action='store_true',
-    help='enable debug messages')
+    parser = ap(description='compile TriCCS calibration database')
 
-  args = parser.parse_args(sys.argv[1:])
+    parser.add_argument(
+        'output', type=str, help='output filename of the calibration database'
+    )
+    parser.add_argument(
+        'fits', nargs='+', type=str, help='list of input FITS files'
+    )
+    parser.add_argument(
+        '-f',
+        '--overwrite',
+        action='store_true',
+        help='overwrite the output file if exists',
+    )
+    parser.add_argument(
+        '-v', '--verbose', action='store_true', help='enable debug messages'
+    )
 
-  hdu_list = list()
-  for f in args.fits:
-    hdu_list.append(fits.open(f)[0])
+    args = parser.parse_args(sys.argv[1:])
 
-  database = compile_database(hdu_list)
+    hdu_list = list()
+    for f in args.fits:
+        hdu_list.append(fits.open(f)[0])
 
-  if args.verbose:
-    print(database)
+    database = compile_database(hdu_list)
 
-  quick_sanity_check(database)
+    if args.verbose:
+        print(database)
 
-  dark_list = generate_darkframe(hdu_list, database)
-  flat_list = generate_flatframe(hdu_list, database)
+    quick_sanity_check(database)
 
-  hdul = compile_as_fitsfile(database, dark_list, flat_list)
-  hdul.writeto(args.output, overwrite=args.overwrite)
+    dark_list = generate_darkframe(hdu_list, database)
+    flat_list = generate_flatframe(hdu_list, database)
 
-  if args.verbose: hdul.info()
+    hdul = compile_as_fitsfile(database, dark_list, flat_list)
+    hdul.writeto(args.output, overwrite=args.overwrite)
+
+    if args.verbose:
+        hdul.info()

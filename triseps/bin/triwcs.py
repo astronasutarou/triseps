@@ -7,28 +7,28 @@ from ..astrometry import solve_field
 
 
 def main():
-  from argparse import ArgumentParser as ap
-  parser = ap(
-    description='update the wcs info of TriCCS images')
+    from argparse import ArgumentParser as ap
 
-  parser.add_argument(
-    'input', type=str,
-    help='input FITS image')
-  parser.add_argument(
-    'output', type=str,
-    help='output FITS image')
-  parser.add_argument(
-    '-f', '--overwrite', action='store_true',
-    help='overwrite the output file if exists')
-  parser.add_argument(
-    '-v', '--verbose', action='store_true',
-    help='enable debug messages')
+    parser = ap(description='update the wcs info of TriCCS images')
 
-  args = parser.parse_args(sys.argv[1:])
+    parser.add_argument('input', type=str, help='input FITS image')
+    parser.add_argument('output', type=str, help='output FITS image')
+    parser.add_argument(
+        '-f',
+        '--overwrite',
+        action='store_true',
+        help='overwrite the output file if exists',
+    )
+    parser.add_argument(
+        '-v', '--verbose', action='store_true', help='enable debug messages'
+    )
 
-  hdul = fits.open(args.input)
-  hdul[0] = solve_field(hdul[0], verbose=args.verbose)
+    args = parser.parse_args(sys.argv[1:])
 
-  hdul.writeto(args.output, overwrite=args.overwrite)
+    hdul = fits.open(args.input)
+    hdul[0] = solve_field(hdul[0], verbose=args.verbose)
 
-  if args.verbose: hdul.info()
+    hdul.writeto(args.output, overwrite=args.overwrite)
+
+    if args.verbose:
+        hdul.info()
