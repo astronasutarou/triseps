@@ -84,6 +84,7 @@ def compile_median_cube(hdu_list, name):
 
 def split_dataset(database, keys):
     """Split the database into subset by unique keys."""
+
     unique_setups = unique(database, keys)[keys]
     for setup in unique_setups:
         calib_id = generate_calib_id(setup)

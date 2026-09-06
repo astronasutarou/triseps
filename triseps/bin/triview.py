@@ -9,6 +9,7 @@ from ..utils import split_dataset
 
 def display_frame(database, verbose=False):
     """Display the frames in the database"""
+
     columns = (
         (
             'frame_id',
@@ -33,6 +34,7 @@ def display_frame(database, verbose=False):
 
 def setup_frame_parser(parser):
     """Setup argument parser for "frame" command"""
+
     parser.add_argument('database', type=str, help='calibration database file')
     parser.add_argument(
         '-c',
@@ -73,6 +75,7 @@ def setup_frame_parser(parser):
 
 def setup_calib_parser(parser):
     """Setup argument parser for "calib" command"""
+
     parser.add_argument('database', type=str, help='calibration database file')
 
     def handler_calib(args):
@@ -95,6 +98,7 @@ def setup_calib_parser(parser):
 
 def setup_extract_parser(parser):
     """Setup argument parser for "extract" command"""
+
     parser.add_argument('database', type=str, help='calibration database file')
     parser.add_argument('key', type=str, help='calibration file key')
     parser.add_argument('output', type=str, help='output filename')

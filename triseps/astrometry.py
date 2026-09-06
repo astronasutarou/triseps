@@ -23,11 +23,18 @@ __keywords_naxis3 = (
     'CRPIX3',
     'CRVAL3',
     'CUNIT3',
+    'CDELT3',
+    'CROTA3',
     'CD1_3',
     'CD2_3',
     'CD3_3',
     'CD3_2',
     'CD3_1',
+    'PC1_3',
+    'PC2_3',
+    'PC3_3',
+    'PC3_2',
+    'PC3_1',
 )
 
 
@@ -63,6 +70,7 @@ def get_astrometry_scale(header):
       floor: lower bound of image scale in arcmin
       floor: upper bound of image scale in arcmin
     """
+
     nx1 = header.get('NAXIS1')
     nx2 = header.get('NAXIS2')
     pxs = np.abs(header.get('CD1_1') * 60.0)
@@ -74,7 +82,7 @@ def drop_naxis3_keywords(header):
     """remove NAXIS3 keywords from a fits header
 
     This function drops NAXIS3 keywords from a header object.
-    This operation is destructive. Note that a header object is altered inplace.
+    This operation alters the header object in place.
 
     Paramters:
       header (Header): a fits header object
@@ -82,7 +90,10 @@ def drop_naxis3_keywords(header):
     Return:
       Header: a FITS header object without NAXIS3 keywords
     """
+
     header.set('NAXIS', 2)
+    if 'WCSAXES' in header:
+        header['WCSAXES'] = 2
     for key in __keywords_naxis3:
         header.remove(key, ignore_missing=True)
     return header
@@ -97,6 +108,7 @@ def wcs_without_naxis3(header):
     Return:
       WCSObj: a wcs object without NAXIS3 keywords
     """
+
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore')
         hdr = header.copy()
@@ -114,6 +126,7 @@ def wcspaste(src, dst):
     Return:
       Header: an updated Header object
     """
+
     keywords = [
         'CTYPE1',
         'CTYPE2',
@@ -181,6 +194,7 @@ def solve_field(src, verbose=False):
     Return:
       ImageHDU: a FITS ImageHDU with the updated WCS information
     """
+
     frame_id = src.header.get('FRAMEID')
     filename = '{}.fits'.format(frame_id)
     wcsfile = '{}.wcs'.format(frame_id)

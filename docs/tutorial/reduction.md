@@ -19,3 +19,78 @@ If `--wcs` option is used, `trired` try to calibrate the WCS information. This o
 There are two options to obtain the result as a 2-dimensional image. The `--ql` option is used to generate a quick-look image. The mean values along with `NAXIS3` are calculated. The `--stack` option generates a 3&sigma;-clipped mean image instead of a simple average.
 
 [dstn]: http://astrometry.net/
+
+## Align frames with an ephemeris
+
+`--track FILE` aligns a calibrated image cube relative to its **first frame**
+using bilinear interpolation. The output retains the input spatial size.
+
+| Options | Assumed observation tracking | Output alignment | Output |
+| --- | --- | --- | --- |
+| `--track FILE` | Sidereal | Moving target | 3D shifted cube |
+| `--track FILE --reverse` | Target ephemeris | Sidereal | 3D shifted cube |
+| `--track FILE --stack` | Sidereal | Moving target | 2D mean image |
+| `--track FILE --reverse --stack` | Target ephemeris | Sidereal | 2D mean image |
+
+For example, align sidereal observations on the moving target:
+
+``` console
+$ trired database.fits input.fits target_cube.fits --track target_tk.dat
+$ trired database.fits input.fits target_stack.fits --track target_tk.dat --stack
+```
+
+To align observations taken while tracking the target on the background stars:
+
+``` console
+$ trired database.fits input.fits stars.fits --track target_tk.dat -r --stack
+```
+
+Without `--track`, no frame translations are applied. `--reverse` (`-r`)
+requires `--track`. `--track` cannot be combined with `--ql`; use `--stack`
+to produce a 2D image. `--ql` and `--stack` are mutually exclusive.
+
+### Ephemeris, times, and coordinates
+
+The initial supported input is the Seimei
+[`_tk.dat` format](../inst/nonsidereal.md#format). The first line is a target
+and time-range description. Subsequent comma-separated lines contain calendar
+date, UTC Julian date, Sun code, Moon code, RA, Dec, azimuth, and elevation.
+RA is expressed in hours/minutes/seconds; Dec in signed degrees/minutes/seconds.
+The reader uses the JD column and treats the astrometric coordinates as ICRS.
+Convert ephemerides in other coordinate systems before supplying them.
+
+At least two strictly time-ordered positions are required. The ephemeris must
+cover all exposure midpoints; extrapolation is not performed. Coordinates are
+linearly interpolated as unit vectors and normalized, allowing RA to cross
+0/360 degrees. Sample the ephemeris finely enough to represent the trajectory.
+
+Exposures are assumed equally spaced, without dropped frames. Their midpoints
+are `GEXP-STR + i * TFRAME + EXPTIME1 / 2`, where `i` starts at zero.
+`TIMESYS` specifies the time scale (UTC if absent). A celestial WCS is required;
+`--wcs` can solve it using astrometry.net if needed. The spatial WCS is adjusted
+for the reference-pixel crop before calculating the translations.
+
+For target alignment, the projected target displacement since frame zero is
+subtracted. `--reverse` adds that displacement, assuming the telescope followed
+the supplied trajectory. This is a translation-only model: tracking errors,
+field rotation, and changes in scale are not measured or corrected. Motion
+within a single exposure is not removed.
+
+### Output and missing pixels
+
+The first frame has zero translation. A shifted pixel is `NaN` if any input
+pixel with nonzero interpolation weight is outside the image or nonfinite.
+There is no wrapping or zero padding. `--stack` computes the 3-sigma-clipped
+mean of valid samples; pixels without valid samples remain `NaN`. The output
+is a mean in the calibrated input units, not a sum or an ADU/s image.
+
+The Primary HDU contains the shifted cube or stacked image. `TRKALIGN`,
+`TRKINTER`, `TRKREF`, and `TRKMJD` record the alignment, interpolation method,
+reference frame, and reference UTC midpoint. Its spatial WCS refers to the
+first exposure; in target-aligned data it is a reference-time mapping, not
+an absolute sky mapping for every shifted frame.
+
+A `SHIFTS` binary table records the zero-based frame index, UTC MJD midpoint,
+and applied `dx` and `dy` translations in pixels. Positive `dx` moves image
+content to increasing column index; positive `dy` to increasing row index.
+No extra sidereal image or photometric zeropoint is generated.

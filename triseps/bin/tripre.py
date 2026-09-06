@@ -16,10 +16,16 @@ def main():
     parser = ap(description='compile TriCCS calibration database')
 
     parser.add_argument(
-        'output', type=str, help='output filename of the calibration database'
+        'output',
+        type=str,
+        metavar='database',
+        help='output filename of the calibration database',
     )
     parser.add_argument(
-        'fits', nargs='+', type=str, help='list of input FITS files'
+        'fits',
+        nargs='+',
+        type=str,
+        help='filename of an input FITS file or a list of input files',
     )
     parser.add_argument(
         '-f',
