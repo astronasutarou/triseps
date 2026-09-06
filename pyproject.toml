@@ -54,6 +54,7 @@ line-length = 79
 indent-width = 4
 
 [tool.ruff.lint]
+select = ['E', 'F', 'W']
 ignore = [
   'E221',
   'E401',
