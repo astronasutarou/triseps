@@ -7,7 +7,8 @@ ephemeris, and combine the cube into a 2D image.
 ## Usage
 
 ``` text
-trired [-w] [-q | -s] [--track FILE] [-r] [-f] [-v] DATABASE FITS OUTPUT
+trired [-w] [-q | -s] [--track FILE] [-r] [-f] [-v]
+       [GAIA_OPTIONS] DATABASE FITS OUTPUT
 ```
 
 ### Arguments
@@ -28,19 +29,42 @@ to a different filter, and dark images are not rescaled for exposure time.
 
 | Option | Description |
 | --- | --- |
-| `-w`, `--wcs` | Solve the spatial WCS with astrometry.net after basic calibration and before any alignment or stacking. See [triwcs](triwcs.md) for prerequisites. |
+| `-w`, `--wcs` | Solve the spatial WCS with Gaia DR3 after basic calibration and before any alignment or stacking. See [triwcs](triwcs.md) for prerequisites. |
 | `-q`, `--ql` | Produce a 2D quick-look image by taking the ordinary arithmetic mean along the time axis. Requires a 3D input; does not reject outliers or ignore NaNs. |
 | `-s`, `--stack` | Produce a 2D image using a 3-sigma-clipped mean along the time axis, excluding nonfinite samples. Requires a 3D input. |
 | `--track FILE` | Align a 3D cube on a moving target, assuming it was observed with sidereal tracking. Read positions from a Seimei `_tk.dat` ephemeris. |
 | `-r`, `--reverse` | Reverse the ephemeris shifts: assume the telescope tracked the target and align the cube on background stars. Requires `--track`. |
 | `-f`, `--overwrite` | Replace an existing output file. |
-| `-v`, `--verbose` | Show astrometry.net output when `--wcs` is used. Basic processing messages are printed regardless of this flag. |
+| `-v`, `--verbose` | Show reference/detection/inlier counts and fit RMS with `--wcs`. Basic processing messages are printed regardless of this flag. |
 | `-h`, `--help` | Show help and exit. |
 
 `--ql` and `--stack` are mutually exclusive. `--track` cannot be combined
 with `--ql`; use `--stack` to combine aligned frames. `--reverse` without
 `--track` is an error. With neither `--ql` nor `--stack`, the input number
 of dimensions is retained.
+
+### Gaia solver options
+
+These settings take effect with `--wcs`; they do not enable WCS solving by
+themselves. See [triwcs](triwcs.md) for matching, timing, and catalog details.
+
+| Option | Description |
+| --- | --- |
+| `--wcs-image {first,mean}` | Detect on the first cube frame (default) or a clipped mean. This selection does not control output stacking. |
+| `--wcs-sip-degree {0,2,3}` | Forward SIP degree; default `3`. CD is fixed and CRPIX is fixed at the cropped image center. `0` fits only CRVAL. |
+| `--gaia-catalog FILE` | Use a local Gaia table instead of an online query. |
+| `--gaia-mag-limit MAG` | Gaia G faint limit; default `18`. |
+| `--wcs-fwhm PIXELS` | Expected detection FWHM; default `3` pixels. |
+| `--wcs-threshold SIGMA` | Detection threshold; default `5` background sigma. |
+| `--wcs-match-radius PIXELS` | Matching tolerance after correcting the pointing offset; default `3` pixels. |
+| `--wcs-max-rms PIXELS` | Maximum accepted fit RMS; default `1` pixel. |
+
+The approximate plate scale and orientation in the header must be correct.
+Gaia proper motions are propagated to the detection image's observation epoch.
+The default fit updates CRVAL and quadratic/cubic SIP coefficients, keeping
+CD fixed and CRPIX at the cropped image center. It requires at least 12 inliers.
+Use first-frame detection for non-sidereal observations. A mean before
+tracking does not align stars, and may smear their images.
 
 ## Processing
 
@@ -49,7 +73,8 @@ of dimensions is retained.
 2. Subtract the matching dark image from every exposure.
 3. Divide every exposure by the matching flat image. Zero or nonfinite flat
    pixels produce `NaN` in the output.
-4. If requested, solve the WCS. For a cube, the solver uses its first frame.
+4. If requested, solve the WCS using Gaia DR3. For a cube, detection
+   uses its first frame by default, or a mean with `--wcs-image mean`.
 5. If `--track` is supplied, shift each frame relative to the first frame.
 6. If requested, combine the frames into a 2D image.
 

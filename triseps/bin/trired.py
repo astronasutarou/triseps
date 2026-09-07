@@ -9,7 +9,12 @@ import sys
 from ..utils import pick, chop_reference_pixels, timestamp
 from ..dark import estimate_darkframe
 from ..flat import estimate_flatframe
-from ..astrometry import solve_field, drop_naxis3_keywords
+from ..astrometry import (
+    solve_field,
+    drop_naxis3_keywords,
+    add_astrometry_arguments,
+    astrometry_options,
+)
 from ..tracking import align_cube
 from ..warnings import eprint
 
@@ -26,7 +31,7 @@ def main():
         '-w',
         '--wcs',
         action='store_true',
-        help='calibrate the wcs info using astrometry.net',
+        help='calibrate the WCS using Gaia DR3',
     )
     parser.add_argument(
         '-q',
@@ -62,6 +67,7 @@ def main():
         '-v', '--verbose', action='store_true', help='enable debug messages'
     )
 
+    add_astrometry_arguments(parser)
     args = parser.parse_args(sys.argv[1:])
 
     if args.reverse and not args.track:
@@ -114,7 +120,11 @@ def main():
         hist(f'flat frame corrected with {flat_id}.')
 
         if args.wcs is True:
-            output = solve_field(output, verbose=args.verbose)
+            output = solve_field(
+                output,
+                verbose=args.verbose,
+                **astrometry_options(args),
+            )
 
         if args.track:
             shifts = align_cube(output, args.track, reverse=args.reverse)

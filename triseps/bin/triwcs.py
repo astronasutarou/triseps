@@ -3,7 +3,11 @@
 import astropy.io.fits as fits
 import sys
 
-from ..astrometry import solve_field
+from ..astrometry import (
+    solve_field,
+    add_astrometry_arguments,
+    astrometry_options,
+)
 
 
 def main():
@@ -23,10 +27,15 @@ def main():
         '-v', '--verbose', action='store_true', help='enable debug messages'
     )
 
+    add_astrometry_arguments(parser)
     args = parser.parse_args(sys.argv[1:])
 
     hdul = fits.open(args.input)
-    hdul[0] = solve_field(hdul[0], verbose=args.verbose)
+    hdul[0] = solve_field(
+        hdul[0],
+        verbose=args.verbose,
+        **astrometry_options(args),
+    )
 
     hdul.writeto(args.output, overwrite=args.overwrite)
 

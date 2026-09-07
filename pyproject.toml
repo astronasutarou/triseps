@@ -23,7 +23,10 @@ classifiers = [
 dynamic = ['version']
 dependencies = [
   'astropy>=8.0',
-  'numpy>=2.4'
+  'numpy>=2.4',
+  'astroquery>=0.4.7',
+  'photutils>=3.0',
+  'scipy>=1.14'
 ]
 
 [project.urls]

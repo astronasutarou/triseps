@@ -14,11 +14,23 @@ The following operations are applied:
 
 The input file is expected to be a FITS data cube. The output file is the reference-trimmed, dark-subtracted, and flat-corrected data cube.
 
-If `--wcs` option is used, `trired` try to calibrate the WCS information. This option depends on `solve-field` of [astrometry.net][dstn]. Make sure taht the astrometry.net and its index files are properly installed. `triseps` is tested on astrometry.net version 0.94.
+With `--wcs`, `trired` calibrates the spatial WCS against Gaia DR3.
+It queries bright stars around the telescope pointing using `astroquery`,
+propagates their proper motions to the observation epoch, detects image
+sources with `photutils`, and fits CRVAL and third-order SIP distortion.
+The header CD matrix stays fixed, and CRPIX is fixed at the cropped image
+center. At least 12 matched inliers are required for the default cubic model;
+`--wcs-sip-degree 2` or `0` explicitly selects a simpler model. No astrometry.net executable or
+index files are required. See [triwcs](../reference/triwcs.md) for requirements
+and solver options.
+
+The first cube frame is used for detection by default. For sidereal
+observations, `--wcs-image mean` can improve detection by using a clipped mean;
+it does not change the output dimensionality. Use `--gaia-catalog FILE` to
+reuse a local Gaia table without a network query.
 
 There are two options to obtain the result as a 2-dimensional image. The `--ql` option is used to generate a quick-look image. The mean values along with `NAXIS3` are calculated. The `--stack` option generates a 3&sigma;-clipped mean image instead of a simple average.
 
-[dstn]: http://astrometry.net/
 
 ## Align frames with an ephemeris
 
@@ -67,7 +79,7 @@ linearly interpolated as unit vectors and normalized, allowing RA to cross
 Exposures are assumed equally spaced, without dropped frames. Their midpoints
 are `GEXP-STR + i * TFRAME + EXPTIME1 / 2`, where `i` starts at zero.
 `TIMESYS` specifies the time scale (UTC if absent). A celestial WCS is required;
-`--wcs` can solve it using astrometry.net if needed. The spatial WCS is adjusted
+`--wcs` can calibrate it using Gaia DR3 if needed. The spatial WCS is adjusted
 for the reference-pixel crop before calculating the translations.
 
 For target alignment, the projected target displacement since frame zero is
