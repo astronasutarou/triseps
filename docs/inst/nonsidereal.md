@@ -45,7 +45,7 @@ The following lines contain the ephemeris of the target. The format is described
 - `${azimuth}` is the apparent azimuth angle of the target in the decimal format.
 - `${elevation}` is the apparent elevation angle of the target in the decimal format.
 
-A sample of the tracking file is presented below. Note that the lines with the elevation below 20 degrees are omitted.
+The first 10 lines of a sample tracking file is presented below. Note that the lines with the elevation below 20 degrees are omitted.
 
 ```
 523608, 2023-02-01 07:00:00 - 2023-02-01 22:00:00
