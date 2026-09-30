@@ -3,6 +3,9 @@ name: Unit test
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   unittest:
     name: Python ${{ matrix.python-version }}
